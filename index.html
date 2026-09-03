@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>770lab · Pixel — création de fiche</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f5132'/%3E%3Ctext x='32' y='44' font-size='36' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%237be0a3'%3EP%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0a1a24; --panel: #0f2733; --panel2: #143241; --line: #1e4256;
+    --txt: #e6f0f3; --muted: #8fa7b3; --green: #22a35c; --green2: #7be0a3;
+    --amber: #e0b34a; --red: #e0605a; --blue: #4aa3df;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--txt); font: 14px/1.45 "IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-bottom: 1px solid var(--line); background: #08151d; position: sticky; top: 0; z-index: 5; }
+  header h1 { margin: 0; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  header h1 span { color: var(--green2); }
+  .who { color: var(--muted); font-size: 12px; display: flex; gap: 10px; align-items: center; }
+  main { max-width: 1180px; margin: 0 auto; padding: 22px; display: grid; gap: 18px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  section h2 { margin: 0 0 12px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  label { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  input, select, textarea { width: 100%; background: var(--panel2); color: var(--txt); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green); }
+  textarea { min-height: 120px; resize: vertical; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .grid .wide { grid-column: span 2; }
+  .grid .full { grid-column: 1 / -1; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button { background: var(--green); color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.secondary { background: var(--panel2); border: 1px solid var(--line); }
+  button.big { padding: 14px 22px; font-size: 15px; }
+  .drop { border: 2px dashed var(--line); border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); cursor: pointer; transition: .15s; }
+  .drop.over { border-color: var(--green2); color: var(--green2); background: #10321f; }
+  .files { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .file { position: relative; width: 110px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px; font-size: 11px; color: var(--muted); }
+  .file img { width: 100%; height: 70px; object-fit: cover; border-radius: 5px; display: block; }
+  .file .pdf { height: 70px; display: grid; place-items: center; font-weight: 700; color: var(--red); font-size: 18px; }
+  .file .x { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--red); color: #fff; display: grid; place-items: center; cursor: pointer; font-size: 12px; }
+  .file .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+  .alert { border-radius: 8px; padding: 10px 12px; margin: 8px 0; font-size: 13px; }
+  .alert.warn { background: #3a2e10; border: 1px solid #6b5218; color: #f3d98a; }
+  .alert.err { background: #3a1614; border: 1px solid #6b2a26; color: #f5a29d; }
+  .alert.ok { background: #10321f; border: 1px solid #1f5a38; color: var(--green2); }
+  .alert.info { background: #10283a; border: 1px solid #1f4a6b; color: #9fd0f5; }
+  .alert ul { margin: 6px 0 0 18px; padding: 0; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; font-size: 12px; user-select: none; }
+  .chip.on { background: var(--green); border-color: var(--green); color: #fff; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+  .badge.ok { background: #1f5a38; color: var(--green2); } .badge.ko { background: #6b2a26; color: #f5a29d; } .badge.wait { background: #4a3a12; color: var(--amber); }
+  .log { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; background: #08151d; border: 1px solid var(--line); border-radius: 8px; padding: 10px; max-height: 220px; overflow: auto; white-space: pre-wrap; color: var(--muted); }
+  .hist { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .hist td, .hist th { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+  .hist th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  a { color: var(--green2); }
+  .hidden { display: none !important; }
+  .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: s .8s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  #login { max-width: 380px; margin: 60px auto; }
+  small.m { color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>770lab <span>·</span> Pixel</h1>
+  <div class="who">
+    <span id="extBadge" class="badge wait" title="Extension Chrome « 770lab → Pixel CRM »">extension : recherche…</span>
+    <span id="whoami"></span>
+    <button id="logout" class="secondary hidden">Déconnexion</button>
+  </div>
+</header>
+
+<main>
+  <div id="setupWarn" class="alert warn hidden">⚠️ Configure <code>FIREBASE_CONFIG</code> en haut du script de cette page (projet Firebase). Le mode « Exemple » reste utilisable pour tester l'extension.</div>
+
+  <section id="login">
+    <h2>Connexion</h2>
+    <div class="grid" style="grid-template-columns:1fr">
+      <div><label>Email</label><input id="lEmail" type="email" autocomplete="username" placeholder="chabadclub770@gmail.com"></div>
+      <div><label>Mot de passe</label><input id="lPass" type="password" autocomplete="current-password"></div>
+      <button id="lBtn">Se connecter</button>
+      <div id="lErr" class="alert err hidden"></div>
+    </div>
+  </section>
+
+  <div id="app" class="hidden" style="display:grid;gap:18px">
+    <section>
+      <h2>1 · Sources — texte, captures, PDF</h2>
+      <textarea id="text" placeholder="Colle ici le texte (fiche client, mail, notes…). Tu peux aussi coller directement une capture d'écran (Ctrl+V / Cmd+V)."></textarea>
+      <div id="drop" class="drop" style="margin-top:10px">📎 Glisse ici des JPG / PNG / PDF, clique pour choisir, ou colle une image (Ctrl+V)</div>
+      <input id="fileInput" type="file" multiple accept="image/*,application/pdf" class="hidden">
+      <div id="files" class="files"></div>
+      <div class="row" style="margin-top:14px">
+        <button id="analyze" class="big">✨ Analyser avec Claude</button>
+        <button id="example" class="secondary">Charger un exemple</button>
+        <button id="clear" class="secondary">Vider</button>
+        <small class="m" id="usage"></small>
+      </div>
+      <div id="aErr" class="alert err hidden"></div>
+    </section>
+
+    <section id="ficheSec" class="hidden">
+      <h2>2 · Fiche extraite — vérifie et corrige</h2>
+      <div id="manquants"></div>
+      <div class="grid">
+        <div><label>Civilité</label><select id="f_civilite"><option value=""></option><option>Madame</option><option>Monsieur</option></select></div>
+        <div><label>Nom *</label><input id="f_nom"></div>
+        <div><label>Prénom *</label><input id="f_prenom"></div>
+        <div><label>Tél mobile</label><input id="f_tel_mobile"></div>
+        <div><label>Tél fixe</label><input id="f_tel_fixe"></div>
+        <div class="wide"><label>Email</label><input id="f_email" type="email"></div>
+        <div class="wide"><label>Adresse</label><input id="f_adresse"></div>
+        <div><label>Complément</label><input id="f_complement_adresse"></div>
+        <div><label>Code postal</label><input id="f_code_postal"></div>
+        <div class="wide"><label>Ville</label><input id="f_ville"></div>
+        <div><label>Type chauffage</label><select id="f_type_chauffage"><option value=""></option><option>Combustible</option><option>Electrique</option><option>Module hybride</option></select></div>
+        <div><label>Énergie</label><select id="f_type_energie"><option value=""></option><option>Gaz</option><option>Fioul</option><option>Bois</option><option>Charbon</option><option>GPL</option><option>Autre</option></select></div>
+        <div><label>Occupation</label><select id="f_occupation"><option value=""></option><option>Propriétaire occupant</option><option>Propriétaire bailleur</option><option>Locataire</option></select></div>
+        <div><label>Logement</label><select id="f_logement"><option value=""></option><option>Maison</option><option>Appartement</option></select></div>
+        <div><label>Électrique</label><select id="f_electrique"><option value=""></option><option>Mono</option><option>Tri</option></select></div>
+        <div><label>Revenu fiscal (€)</label><input id="f_revenu_fiscal" type="number"></div>
+        <div><label>Foyers</label><input id="f_nb_foyers" type="number" value="1"></div>
+        <div><label>Personnes</label><input id="f_nb_personnes" type="number"></div>
+        <div><label>Âge du bâtiment</label><select id="f_age_batiment"><option value=""></option><option>Logement neuf</option><option>Moins de 2 ans</option><option>Plus de 2 ans et moins de 15 ans</option><option>Plus de 15 ans</option></select></div>
+        <div><label>Surface habitable (m²)</label><input id="f_surface_habitable" type="number" step="0.01"></div>
+        <div><label>N° devis</label><input id="f_num_devis"></div>
+        <div><label>Date devis</label><input id="f_date_devis" placeholder="JJ/MM/AAAA"></div>
+        <div><label>Commercial</label><input id="f_commercial"></div>
+        <div><label>Précarité (source)</label><input id="f_precarite_source" readonly></div>
+        <div class="full"><label>Travaux demandés</label><div id="f_travaux" class="chips"></div></div>
+        <div class="full"><label>Commentaire Pixel</label><textarea id="f_commentaire" style="min-height:70px"></textarea></div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button id="create" class="big">🚀 Créer la fiche sur Pixel</button>
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--txt)"><input id="dryRun" type="checkbox" style="width:auto"> Test à blanc (remplit sans enregistrer)</label>
+        <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--txt)">Deal <input id="dealKeyword" style="width:120px" value="STEREM"></label>
+      </div>
+      <div id="cStatus" class="hidden" style="margin-top:12px"></div>
+      <div id="cLog" class="log hidden" style="margin-top:8px"></div>
+    </section>
+
+    <section>
+      <h2>3 · Historique</h2>
+      <table class="hist"><thead><tr><th>Date</th><th>Client</th><th>Dossier</th><th>Précarité</th><th>Devis</th></tr></thead><tbody id="hist"><tr><td colspan="5" class="m">—</td></tr></tbody></table>
+    </section>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+// ============================================================================
+// CONFIG — à remplir avec la config web de ton projet Firebase (Console > Paramètres du projet > Vos applications)
+// ============================================================================
+const FIREBASE_CONFIG = {
+  apiKey: "REMPLACER",
+  authDomain: "REMPLACER.firebaseapp.com",
+  projectId: "REMPLACER",
+  storageBucket: "REMPLACER.appspot.com",
+  messagingSenderId: "REMPLACER",
+  appId: "REMPLACER"
+};
+const FUNCTIONS_REGION = "europe-west1";
+const TRAVAUX = ["PAC","ITI","ITE","VMC","BALLON THERMODYNAMIQUE CET","BALLON SOLAIRE CESI","CHAUDIERE","POÊLE","SYSTÈME SOLAIRE COMBINÉ SSC","COMBLES PERDUS SOUFFLÉ","COMBLES PERDUS DÉROULÉ","TOITURE","RAMPANT","PLAFOND GARAGE","VIDE SANITAIRE"];
+
+// ============================================================================
+const $ = (id) => document.getElementById(id);
+const configured = FIREBASE_CONFIG.apiKey !== "REMPLACER";
+let db = null, fn = null, user = null;
+if (configured) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.firestore();
+  fn = firebase.app().functions(FUNCTIONS_REGION);
+} else {
+  $("setupWarn").classList.remove("hidden");
+}
+
+// ---------- Auth ----------
+function showApp(u) {
+  user = u;
+  $("login").classList.toggle("hidden", !!u);
+  $("app").classList.toggle("hidden", !u);
+  $("logout").classList.toggle("hidden", !u);
+  $("whoami").textContent = u ? (u.email || "") : "";
+  if (u) loadHistory();
+}
+if (configured) {
+  firebase.auth().onAuthStateChanged(showApp);
+  $("lBtn").onclick = async () => {
+    $("lErr").classList.add("hidden");
+    try { await firebase.auth().signInWithEmailAndPassword($("lEmail").value.trim(), $("lPass").value); }
+    catch (e) { $("lErr").textContent = e.message; $("lErr").classList.remove("hidden"); }
+  };
+  $("lPass").addEventListener("keydown", (e) => { if (e.key === "Enter") $("lBtn").click(); });
+  $("logout").onclick = () => firebase.auth().signOut();
+} else {
+  showApp({ email: "mode exemple (Firebase non configuré)" });
+}
+
+// ---------- Fichiers ----------
+const files = []; // {name, type, data(base64), preview}
+function addFile(file) {
+  if (!file) return;
+  const type = file.type === "application/pdf" ? "application/pdf" : (file.type.startsWith("image/") ? file.type : null);
+  if (!type) { alert("Type non supporté : " + (file.type || file.name)); return; }
+  if (file.size > 8 * 1024 * 1024) { alert("Fichier trop lourd (max 8 Mo) : " + file.name); return; }
+  const r = new FileReader();
+  r.onload = () => {
+    const dataUrl = r.result;
+    files.push({ name: file.name || ("capture-" + (files.length + 1) + ".png"), type, data: dataUrl.split(",")[1], preview: type.startsWith("image/") ? dataUrl : null });
+    renderFiles();
+  };
+  r.readAsDataURL(file);
+}
+function renderFiles() {
+  $("files").innerHTML = files.map((f, i) => `
+    <div class="file">${f.preview ? `<img src="${f.preview}">` : `<div class="pdf">PDF</div>`}<div class="n" title="${f.name}">${f.name}</div><div class="x" data-i="${i}">×</div></div>`).join("");
+  $("files").querySelectorAll(".x").forEach((x) => { x.onclick = () => { files.splice(+x.dataset.i, 1); renderFiles(); }; });
+}
+const drop = $("drop");
+drop.onclick = () => $("fileInput").click();
+$("fileInput").onchange = (e) => { [...e.target.files].forEach(addFile); e.target.value = ""; };
+["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => [...e.dataTransfer.files].forEach(addFile));
+document.addEventListener("paste", (e) => {
+  const items = [...(e.clipboardData?.items || [])].filter((it) => it.kind === "file");
+  if (items.length) { e.preventDefault(); items.forEach((it) => addFile(it.getAsFile())); }
+});
+$("clear").onclick = () => { files.length = 0; renderFiles(); $("text").value = ""; $("ficheSec").classList.add("hidden"); $("aErr").classList.add("hidden"); $("usage").textContent = ""; };
+
+// ---------- Extraction ----------
+$("analyze").onclick = async () => {
+  $("aErr").classList.add("hidden");
+  if (!configured) { $("aErr").textContent = "Firebase n'est pas configuré : utilise « Charger un exemple » ou remplis FIREBASE_CONFIG."; $("aErr").classList.remove("hidden"); return; }
+  const text = $("text").value.trim();
+  if (!text && !files.length) { $("aErr").textContent = "Colle du texte ou ajoute au moins un fichier."; $("aErr").classList.remove("hidden"); return; }
+  const btn = $("analyze"); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Analyse en cours…';
+  try {
+    const res = await fn.httpsCallable("extractFiche", { timeout: 180000 })({ text, files: files.map((f) => ({ name: f.name, type: f.type, data: f.data })) });
+    const { fiche, usage, model } = res.data;
+    fillForm(fiche);
+    if (usage) $("usage").textContent = `${model} · ${usage.input_tokens} tokens in / ${usage.output_tokens} out`;
+  } catch (e) {
+    $("aErr").textContent = "Erreur : " + (e.message || e); $("aErr").classList.remove("hidden");
+  } finally { btn.disabled = false; btn.textContent = "✨ Analyser avec Claude"; }
+};
+
+$("example").onclick = () => fillForm({
+  civilite: "Madame", nom: "BARTHELEMY", prenom: "Valentine", tel_mobile: "06 37 68 98 81", email: null,
+  adresse: "226 RUE DES MAISONNETTES", code_postal: "76760", ville: "ANCRETIEVILLE-SAINT-VICTOR",
+  type_chauffage: "Combustible", type_energie: "Gaz", occupation: "Propriétaire occupant", logement: "Maison", electrique: "Mono",
+  revenu_fiscal: 45000, nb_foyers: 1, nb_personnes: 4, age_batiment: "Plus de 15 ans", travaux: ["PAC"], surface_habitable: 146,
+  num_devis: "AVR-2025-2010", date_devis: "29/04/2026", commercial: "Matthieu Rot", precarite_source: "Modeste", mpr_couleur: "Jaune", mpr_montant: 4000,
+  equipements: [], manquants: ["Email tronqué sur la capture : valentine.barthelemy@hot…"], doutes: []
+});
+
+const FIELDS = ["civilite","nom","prenom","tel_mobile","tel_fixe","email","adresse","complement_adresse","code_postal","ville","type_chauffage","type_energie","occupation","logement","electrique","revenu_fiscal","nb_foyers","nb_personnes","age_batiment","surface_habitable","num_devis","date_devis","commercial","precarite_source","commentaire"];
+let current = null;
+function buildComment(f) {
+  const parts = [];
+  if (f.num_devis) parts.push("Devis " + f.num_devis + (f.date_devis ? " du " + f.date_devis : ""));
+  if (f.commercial) parts.push("Commercial : " + f.commercial);
+  if (f.surface_habitable) parts.push("Surface " + f.surface_habitable + " m2");
+  const ch = [f.type_energie, f.logement, f.electrique].filter(Boolean).join(", ");
+  if (ch) parts.push("Chauffage " + ch);
+  if (f.mpr_couleur || f.mpr_montant) parts.push("MPR " + (f.mpr_couleur || "") + (f.mpr_montant ? " (" + f.mpr_montant + " EUR)" : ""));
+  if (f.equipements && f.equipements.length) parts.push("Equipements : " + f.equipements.join(" ; "));
+  if (f.montant_devis_ttc) parts.push("Devis TTC " + f.montant_devis_ttc + " EUR");
+  return parts.join(" - ");
+}
+function fillForm(f) {
+  current = f;
+  if (!f.commentaire) f.commentaire = buildComment(f);
+  FIELDS.forEach((k) => { const el = $("f_" + k); if (el) el.value = (f[k] === null || f[k] === undefined) ? "" : f[k]; });
+  $("f_travaux").innerHTML = TRAVAUX.map((t) => `<span class="chip ${(f.travaux || []).includes(t) ? "on" : ""}" data-t="${t}">${t}</span>`).join("");
+  $("f_travaux").querySelectorAll(".chip").forEach((c) => { c.onclick = () => c.classList.toggle("on"); });
+  const alerts = [];
+  if (f.manquants && f.manquants.length) alerts.push(`<div class="alert warn"><b>À compléter</b><ul>${f.manquants.map((m) => "<li>" + esc(m) + "</li>").join("")}</ul></div>`);
+  if (f.doutes && f.doutes.length) alerts.push(`<div class="alert info"><b>Doutes</b><ul>${f.doutes.map((m) => "<li>" + esc(m) + "</li>").join("")}</ul></div>`);
+  $("manquants").innerHTML = alerts.join("");
+  $("ficheSec").classList.remove("hidden");
+  $("cStatus").classList.add("hidden"); $("cLog").classList.add("hidden");
+  $("ficheSec").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function readForm() {
+  const f = { ...(current || {}) };
+  FIELDS.forEach((k) => { const el = $("f_" + k); if (!el) return; let v = el.value.trim(); if (el.type === "number") v = v === "" ? null : Number(v); f[k] = v === "" ? null : v; });
+  f.travaux = [...$("f_travaux").querySelectorAll(".chip.on")].map((c) => c.dataset.t);
+  return f;
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- Extension ----------
+let extVersion = null;
+window.addEventListener("message", (ev) => {
+  const m = ev.data;
+  if (!m || m.source !== "770pixel-ext") return;
+  if (m.type === "PONG") { extVersion = m.version; $("extBadge").className = "badge ok"; $("extBadge").textContent = "extension v" + m.version; return; }
+  if (m.type === "STATUS") { setStatus("wait", '<span class="spin"></span>' + esc(m.message || m.phase)); return; }
+  if (m.type === "RESULT") onResult(m);
+});
+window.postMessage({ source: "770pixel", type: "PING" }, "*");
+setTimeout(() => { if (!extVersion) { $("extBadge").className = "badge ko"; $("extBadge").textContent = "extension absente"; } }, 2500);
+
+function setStatus(kind, html) { const s = $("cStatus"); s.className = "alert " + (kind === "ok" ? "ok" : kind === "err" ? "err" : "info"); s.innerHTML = html; s.classList.remove("hidden"); }
+function log(lines) { const l = $("cLog"); l.textContent = (lines || []).join("\n"); l.classList.toggle("hidden", !(lines && lines.length)); }
+
+$("create").onclick = () => {
+  const f = readForm();
+  if (!f.nom || !f.prenom) { setStatus("err", "Nom et prénom sont obligatoires."); return; }
+  if (!extVersion) { setStatus("err", "Extension Chrome non détectée. Installe-la (chrome://extensions → Mode développeur → Charger l'extension non empaquetée → dossier <code>extension/</code>) puis recharge cette page."); return; }
+  const jobId = "job-" + Date.now();
+  current = f;
+  $("create").disabled = true;
+  setStatus("wait", '<span class="spin"></span>Envoi à l\'extension…');
+  log([]);
+  window.postMessage({ source: "770pixel", type: "CREATE_FICHE", jobId, fiche: f, options: { dryRun: $("dryRun").checked, dealKeyword: $("dealKeyword").value.trim() || "STEREM" } }, "*");
+  setTimeout(() => { if ($("create").disabled) { $("create").disabled = false; } }, 4 * 60000);
+};
+
+async function onResult(m) {
+  $("create").disabled = false;
+  log(m.log);
+  if (!m.ok) { setStatus("err", "❌ " + esc((m.errors || []).join(" · ") || "Échec")); return; }
+  if (m.dryRun) { setStatus("ok", "✅ Test à blanc terminé" + (m.precarite ? " — précarité calculée : <b>" + esc(m.precarite) + "</b>" : "") + ". Rien n'a été enregistré : ferme l'onglet Pixel."); return; }
+  const f = current || {};
+  const href = m.url ? `<a href="${esc(m.url)}" target="_blank">ouvrir</a>` : "";
+  setStatus("ok", `✅ Fiche créée : <b>${esc(m.dossier || "?")}</b> — ${esc(f.nom || "")} ${esc(f.prenom || "")}` + (m.precarite ? ` — précarité <b>${esc(m.precarite)}</b>` : "") + " " + href);
+  if (db && user && user.uid) {
+    try {
+      await db.collection("fiches").add({ uid: user.uid, at: firebase.firestore.FieldValue.serverTimestamp(), dossier: m.dossier || null, url: m.url || null, precarite: m.precarite || null, nom: f.nom || null, prenom: f.prenom || null, num_devis: f.num_devis || null, ville: f.ville || null });
+      loadHistory();
+    } catch (e) { console.warn("historique", e); }
+  }
+}
+
+// ---------- Historique ----------
+async function loadHistory() {
+  if (!db || !user || !user.uid) return;
+  try {
+    const snap = await db.collection("fiches").where("uid", "==", user.uid).orderBy("at", "desc").limit(30).get();
+    const rows = snap.docs.map((d) => d.data());
+    $("hist").innerHTML = rows.length ? rows.map((r) => `<tr><td>${r.at ? r.at.toDate().toLocaleString("fr-FR") : ""}</td><td>${esc(r.nom || "")} ${esc(r.prenom || "")}</td><td>${r.url ? `<a href="${esc(r.url)}" target="_blank">${esc(r.dossier || "")}</a>` : esc(r.dossier || "")}</td><td>${esc(r.precarite || "")}</td><td>${esc(r.num_devis || "")}</td></tr>`).join("") : '<tr><td colspan="5" class="m">Aucune fiche créée pour l\'instant.</td></tr>';
+  } catch (e) { console.warn("historique", e); }
+}
+</script>
+</body>
+</html>
