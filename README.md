@@ -55,9 +55,13 @@ Modèle par défaut : `claude-sonnet-5`. Pour diviser le coût par ~3 : `CLAUDE_
 
 ## 2. Le site sur 770lab.com/pixel
 
-Le site est un seul fichier `web/index.html`. Dans le repo GitHub Pages de 770lab.com, crée le dossier `pixel/` et mets-y `index.html` → l'URL devient `https://770lab.com/pixel/`.
+✅ Déjà fait — déployé et en ligne sur **https://770lab.com/pixel/**.
 
-Dans la console Firebase → **Authentication → Settings → Domaines autorisés**, ajoute `770lab.com`.
+Le site est un seul fichier `web/index.html`, poussé sur le repo dédié `770lab/pixel` (branche `main`, racine) avec GitHub Pages activé (Settings → Pages → Source = `main` / `/root`). Comme tes autres démos (`dessert`, `maurice`, `goku`…), ce repo hérite automatiquement du domaine personnalisé `770lab.com` déjà configuré sur ton repo racine (`{owner}.github.io`) : pas de DNS ni de routing à toucher, chaque nouveau repo `xxx` avec Pages activé devient `770lab.com/xxx/` tout seul.
+
+Pour mettre à jour le site : remplace `index.html` dans le repo `770lab/pixel` (commit direct ou upload) — la page se republie automatiquement en 1–2 min.
+
+Dans la console Firebase → **Authentication → Settings → Domaines autorisés**, ajoute `770lab.com` (à faire quand tu configures Firebase, étape 1).
 
 (Alternative : `firebase deploy --only hosting` publie le même fichier sur `PROJECT.web.app`.)
 
