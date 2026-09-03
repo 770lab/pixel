@@ -28,17 +28,26 @@ Trois morceaux, trois dossiers :
 
 ## 1. Firebase (une fois)
 
-1. Console Firebase → nouveau projet (ou un existant) → plan **Blaze** (obligatoire pour les Cloud Functions ; ton volume restera dans le gratuit).
-2. **Authentication** → activer *E-mail / mot de passe* → créer ton utilisateur (chabadclub770@gmail.com).
-3. **Firestore** → créer la base (mode production, région `eur3` ou `europe-west1`).
-4. **Paramètres du projet → Vos applications → Web** → copier la config et la coller dans `FIREBASE_CONFIG` en haut du `<script>` de `web/index.html`.
-5. Mettre le project id dans `.firebaserc`.
+✅ Déjà fait, sauf le dernier point :
+
+1. ✅ Projet Firebase créé : **`lab-pixel`** (forfait Spark, gratuit).
+2. ✅ **Authentication** → *E-mail / mot de passe* activé → utilisateur créé : `chabadclub770@gmail.com` avec un mot de passe généré (communiqué à part, pas ici — c'est un repo public). Change-le dès ta première connexion sur `770lab.com/pixel`, ou directement dans Firebase Console → Authentication → Utilisateurs → ⋮ → Réinitialiser le mot de passe.
+3. ✅ **Firestore** créé (édition Standard, région `eur3` Europe), règles de sécurité publiées (celles du fichier `firestore.rules`).
+4. ✅ App Web enregistrée, config copiée dans `FIREBASE_CONFIG` (`web/index.html`) et dans `.firebaserc` (`lab-pixel`).
+5. ✅ Domaine `770lab.com` ajouté aux domaines autorisés (Authentication → Paramètres).
+
+6. ❌ **Bloqué : passage au forfait Blaze** (obligatoire pour les Cloud Functions). Tes deux comptes de facturation Google Cloud existants (« Paiement de Firebase ») ont *chacun atteint leur quota maximal de projets associés* — Firebase a refusé d'y rattacher `lab-pixel`. Pour débloquer, une des actions suivantes (je ne peux pas le faire moi-même, ça touche à la facturation) :
+   - Va sur [console.cloud.google.com/billing](https://console.cloud.google.com/billing), ouvre un des deux comptes « Paiement de Firebase », onglet **Projects**, et détache un projet que tu n'utilises plus ; ou
+   - Demande une augmentation de quota de projets sur ce compte de facturation ; ou
+   - Crée un nouveau compte de facturation (nouvelle carte) et attache-le à `lab-pixel`.
+
+   Une fois débloqué : Console Firebase → `lab-pixel` → ⚙️ → Utilisation et facturation → passer à **Blaze**, puis :
 
 ```bash
 npm i -g firebase-tools
 firebase login
 cd pixel-fiche
-firebase use REMPLACER-PAR-TON-PROJECT-ID
+firebase use lab-pixel
 
 # clé API Anthropic (stockée en secret, jamais dans le code)
 firebase functions:secrets:set ANTHROPIC_API_KEY
@@ -46,7 +55,7 @@ firebase functions:secrets:set ANTHROPIC_API_KEY
 # optionnel : functions/.env  (copier .env.example) — emails autorisés, modèle
 cd functions && npm install && cd ..
 
-firebase deploy --only functions,firestore:rules
+firebase deploy --only functions
 ```
 
 Après le deploy, la fonction est appelée par le site via `firebase.app().functions("europe-west1").httpsCallable("extractFiche")` — rien d'autre à configurer.
